@@ -6,7 +6,7 @@ def connect(config):
     try:
         # connecting to the PostgreSQL server
         with psycopg2.connect(**config) as conn:
-            print('Connected to the PostgreSQL server.')
+            print('Connected to database')
             return conn
     except (Exception. psycopg2.DatabaseError ) as error:
         print(error)

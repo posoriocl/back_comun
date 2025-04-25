@@ -10,3 +10,4 @@ class Usuario(BaseModel):
     fono: str
     email: EmailStr = Field (default="email", min_length=5,max_length=50)
 
+

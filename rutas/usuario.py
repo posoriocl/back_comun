@@ -11,6 +11,25 @@ ruta=APIRouter()
 config = load_config ('app_config.ini', 'postgresql')
 conn=connect(config)
 
+@ruta.get('/login/{username}/{password}')
+def login_usuario(username: str, password: str):
+    try:
+        with conn.cursor() as cur:     
+                sql = 'SELECT * FROM usuario where username = ' + "'" + username + "'"
+                cur.execute(sql)
+                rows= (cur.fetchall())
+                msg = "No existe usuario " + username
+                if rows:
+                      password_encriptada = encriptar_variable(password.encode('utf-8'))
+                      password_encriptada = password_encriptada.decode('utf-8')
+                      msg = "password incorrecta"
+                      if password_encriptada == rows[0][2]:
+                         msg = "Usuario OK"
+    except (Exception, psycopg2.DatabaseError) as error:
+            print(error)    
+    finally:
+            return msg
+
 @ruta.get('/usuario/{id}')
 def usuario_una(id: int):
     try:
@@ -42,6 +61,8 @@ def usuario_todas():
 def usuario_inserta(usuario: Usuario):
     id=None
     usuario.password = encriptar_variable(usuario.password.encode('utf-8'))
+    usuario.password = usuario.password.decode('utf-8')
+    print (usuario.password)
     try:
         with conn.cursor() as cur:     
                 sql_fields="INSERT INTO usuario ( username, password, activo, email, fono) VALUES (%s,%s,%s,%s,%s) RETURNING id;" 
